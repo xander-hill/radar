@@ -1,0 +1,84 @@
+================================================================================
+PROJECT RADAR: INTERNAL DEVELOPMENT REFERENCE GUIDE (PHASE 1 & 2)
+================================================================================
+
+1. DIRECTORY STRUCTURE (Standard Go Layout)
+-------------------------------------------
+radar/
+├── cmd/
+│   └── api/                # Application entry point (main.go)
+├── internal/
+│   ├── database/           # Postgres connection & DB logic
+│   ├── logic/              # Momentum & Scoring algorithms
+│   └── models/             # Data structures (Structs)
+├── migrations/             # SQL schema scripts
+├── .gitignore              # Files to ignore (bin/, .env, etc.)
+├── docker-compose.yml      # Infrastructure orchestration
+├── go.mod                  # Dependency management
+└── README.md               # Project documentation
+
+2. CORE COMMANDS (Terminal)
+---------------------------
+# Initialize Go (Run once)
+go mod init github.com/yourusername/radar
+
+# Add Dependencies
+go get github.com/jackc/pgx/v5
+
+# Start Database
+docker-compose up -d
+
+# Stop Database
+docker-compose down
+
+# Check DB Status
+docker ps
+
+# Run the Application
+go run main.go
+
+# Format Code (Professional Standard)
+go fmt ./...
+
+3. INFRASTRUCTURE (docker-compose.yml)
+--------------------------------------
+Image: postgis/postgis:15-3.3
+User: user
+Pass: password
+DB: momentum_db
+Port: 5432
+DSN: postgres://user:password@localhost:5432/momentum_db
+
+4. DATABASE SCHEMA (SQL - Run inside Docker)
+--------------------------------------------
+-- Command to enter: docker exec -it radar-db-1 psql -U user -d momentum_db
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE plans (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    location GEOGRAPHY(Point, 4326),
+    base_score FLOAT DEFAULT 0,
+    check_ins INT DEFAULT 0,
+    saves INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+5. MOMENTUM FORMULA (The "Secret Sauce")
+-----------------------------------------
+Points = (Saves * 2.0) + (CheckIns * 3.0) + BaseScore
+Gravity = 1.8
+Score = Points / (TimeInHours + 2)^Gravity
+
+6. GIT WORKFLOW (The "Resume Flex")
+-----------------------------------
+1. git add .
+2. git commit -m "feat: <description>"  -- (feat, chore, fix, or docs)
+3. git push origin main
+
+7. KEY VS CODE SHORTCUTS
+------------------------
+Open Terminal: Ctrl + `
+Install Tools: Ctrl + Shift + P -> "Go: Install/Update Tools"
+Find File: Ctrl + P
+================================================================================
