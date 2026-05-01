@@ -37,3 +37,19 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 	// 4. Return as JSON
 	c.JSON(http.StatusOK, plans)
 }
+
+// PostCheckInHandler handles the "I am here" signal
+func (s *Store) PostCheckInHandler(c *gin.Context) {
+	// 1. Get the ID from the URL (e.g., /plans/1/checkin)
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+
+	// 2. Update the DB
+	err := s.IncrementCheckIn(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check in"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Check-in successful! Momentum increased."})
+}

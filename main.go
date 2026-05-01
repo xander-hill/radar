@@ -25,6 +25,7 @@ func main() {
 
 	// 3. Define the Route
 	r.GET("/radar", store.GetRadarHandler)
+	r.POST("/plans/:id/checkin", store.PostCheckInHandler)
 
 	// 4. Start the Engine
 	log.Println("Radar API is live on http://localhost:8080")

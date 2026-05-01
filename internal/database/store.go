@@ -39,3 +39,15 @@ func (s *Store) GetNearbyPlans(ctx context.Context, userLat, userLng float64, ra
 	}
 	return plans, nil
 }
+
+// IncrementCheckIn bumps the count and updates the timestamp
+func (s *Store) IncrementCheckIn(ctx context.Context, planID int) error {
+	query := `
+		UPDATE plans 
+		SET check_ins = check_ins + 1, 
+		    updated_at = CURRENT_TIMESTAMP 
+		WHERE id = $1
+	`
+	_, err := s.Conn.Exec(ctx, query, planID)
+	return err
+}
