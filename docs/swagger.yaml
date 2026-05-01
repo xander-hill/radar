@@ -1,0 +1,107 @@
+basePath: /
+definitions:
+  models.Plan:
+    properties:
+      base_score:
+        description: Analytics signals for the Momentum Engine
+        type: number
+      check_ins:
+        description: Real-time presence
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      momentum_score:
+        description: Enriched Fields
+        type: number
+      saves:
+        description: Intent signal
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a real-time social discovery engine.
+  title: Radar Momentum API
+  version: "1.0"
+paths:
+  /plans/{id}/checkin:
+    post:
+      description: Increments the check-in count for a specific plan
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Check in to a plan
+      tags:
+      - plans
+  /plans/{id}/save:
+    post:
+      description: Increments the save count for a specific plan
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Save a plan
+      tags:
+      - plans
+  /radar:
+    get:
+      description: Fetches plans within a radius and sorts by momentum score
+      parameters:
+      - description: Latitude
+        format: float64
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Plan'
+            type: array
+      summary: Get nearby trending plans
+      tags:
+      - plans
+swagger: "2.0"

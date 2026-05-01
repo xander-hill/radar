@@ -9,7 +9,15 @@ import (
 	"github.com/xanderhill/radar/internal/logic"
 )
 
-// GetRadarHandler handles the GET /radar request
+// GetRadarHandler godoc
+// @Summary Get nearby trending plans
+// @Description Fetches plans within a radius and sorts by momentum score
+// @Tags plans
+// @Produce json
+// @Param lat query float64 true "Latitude"
+// @Param lng query float64 true "Longitude"
+// @Success 200 {array} models.Plan
+// @Router /radar [get]
 func (s *Store) GetRadarHandler(c *gin.Context) {
 	// 1. Get query params (e.g., /radar?lat=34.05&lng=-118.24)
 	lat, _ := strconv.ParseFloat(c.Query("lat"), 64)
@@ -38,7 +46,13 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, plans)
 }
 
-// PostCheckInHandler handles the "I am here" signal
+// PostCheckInHandler godoc
+// @Summary      Check in to a plan
+// @Description  Increments the check-in count for a specific plan
+// @Tags         plans
+// @Param        id   path      int  true  "Plan ID"
+// @Success      200  {object}  map[string]string
+// @Router       /plans/{id}/checkin [post]
 func (s *Store) PostCheckInHandler(c *gin.Context) {
 	// 1. Get the ID from the URL (e.g., /plans/1/checkin)
 	idStr := c.Param("id")
@@ -54,7 +68,13 @@ func (s *Store) PostCheckInHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Check-in successful! Momentum increased."})
 }
 
-// PostSaveHandler handles the "Save for later" signal
+// PostSaveHandler godoc
+// @Summary      Save a plan
+// @Description  Increments the save count for a specific plan
+// @Tags         plans
+// @Param        id   path      int  true  "Plan ID"
+// @Success      200  {object}  map[string]string
+// @Router       /plans/{id}/save [post]
 func (s *Store) PostSaveHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 

@@ -6,8 +6,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/xanderhill/radar/internal/database"
+
+	_ "github.com/xanderhill/radar/docs"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	swaggerFiles "github.com/swaggo/files"
 )
 
+// @title Radar Momentum API
+// @version 1.0
+// @description This is a real-time social discovery engine.
+// @host localhost:8080
+// @BasePath /
 func main() {
 	connURL := "postgres://user:password@127.0.0.1:5432/radar_db"
 
@@ -27,6 +38,7 @@ func main() {
 	r.GET("/radar", store.GetRadarHandler)
 	r.POST("/plans/:id/checkin", store.PostCheckInHandler)
 	r.POST("/plans/:id/save", store.PostSaveHandler)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 4. Start the Engine
 	log.Println("Radar API is live on http://localhost:8080")
