@@ -15,6 +15,10 @@ type Plan struct {
 	CheckIns  int     `json:"check_ins"`  // Real-time presence
 	Saves     int     `json:"saves"`      // Intent signal
 
+	// Enriched Fields
+	MomentumScore float64 `json:"momentum_score"`
+	Status        string  `json:"status"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

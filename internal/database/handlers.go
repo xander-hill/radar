@@ -23,6 +23,12 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 		return
 	}
 
+	// Calculate scores for each plan before returning
+	for i := range plans {
+		plans[i].MomentumScore = logic.CalculateScore(plans[i])
+		plans[i].Status = logic.GetState(plans[i].MomentumScore)
+	}
+
 	// 3. Sort by Momentum
 	sort.Slice(plans, func(i, j int) bool {
 		return logic.CalculateScore(plans[i]) > logic.CalculateScore(plans[j])
