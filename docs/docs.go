@@ -107,7 +107,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Plan"
+                                "$ref": "#/definitions/github_com_xanderhill_radar_internal_models.Plan"
                             }
                         }
                     }
@@ -116,7 +116,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Plan": {
+        "github_com_xanderhill_radar_internal_models.Plan": {
             "type": "object",
             "properties": {
                 "base_score": {

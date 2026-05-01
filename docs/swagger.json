@@ -101,7 +101,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Plan"
+                                "$ref": "#/definitions/github_com_xanderhill_radar_internal_models.Plan"
                             }
                         }
                     }
@@ -110,7 +110,7 @@
         }
     },
     "definitions": {
-        "models.Plan": {
+        "github_com_xanderhill_radar_internal_models.Plan": {
             "type": "object",
             "properties": {
                 "base_score": {

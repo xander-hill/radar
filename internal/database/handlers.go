@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/xanderhill/radar/internal/logic"
+	"github.com/xanderhill/radar/internal/models"
 )
 
 // GetRadarHandler godoc
@@ -24,8 +25,11 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 	lng, _ := strconv.ParseFloat(c.Query("lng"), 64)
 	radius := 10000.0 // 10km default
 
+	var plans []models.Plan
+	var err error
+
 	// 2. Fetch from DB
-	plans, err := s.GetNearbyPlans(c.Request.Context(), lat, lng, radius)
+	plans, err = s.GetNearbyPlans(c.Request.Context(), lat, lng, radius)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

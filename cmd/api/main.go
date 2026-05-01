@@ -5,13 +5,11 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/xanderhill/radar/internal/database"
-
-	_ "github.com/xanderhill/radar/docs"
-
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	swaggerFiles "github.com/swaggo/files"
+	_ "github.com/xanderhill/radar/docs"
+	"github.com/xanderhill/radar/internal/database"
 )
 
 // @title Radar Momentum API
