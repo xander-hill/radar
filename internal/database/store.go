@@ -51,3 +51,15 @@ func (s *Store) IncrementCheckIn(ctx context.Context, planID int) error {
 	_, err := s.Conn.Exec(ctx, query, planID)
 	return err
 }
+
+// IncrementSave bumps the save count
+func (s *Store) IncrementSave(ctx context.Context, planID int) error {
+	query := `
+		UPDATE plans 
+		SET saves = saves + 1, 
+		    updated_at = CURRENT_TIMESTAMP 
+		WHERE id = $1
+	`
+	_, err := s.Conn.Exec(ctx, query, planID)
+	return err
+}

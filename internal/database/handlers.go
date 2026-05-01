@@ -53,3 +53,16 @@ func (s *Store) PostCheckInHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Check-in successful! Momentum increased."})
 }
+
+// PostSaveHandler handles the "Save for later" signal
+func (s *Store) PostSaveHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	err := s.IncrementSave(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save plan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Plan saved! Interest signal tracked."})
+}
