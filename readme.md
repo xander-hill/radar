@@ -1,34 +1,45 @@
-# Radar 🛰️
+# RADAR
 
-Radar is a real-time social discovery engine built to digitize "word of mouth." Unlike static event directories, Radar uses a momentum-based scoring algorithm to surface what is happening _right now_ and what is gaining traction in the real world.
+A real-time social discovery engine that tracks the "momentum" of local spots. Built with Go and PostGIS, it helps users find what's trending nearby in categories like coffee, nightlife, art, and food.
 
-## Engineering Highlights
+## Core Features
 
-- **Momentum Scoring Engine:** Developed a time-decay algorithm in **Go** that ranks activities based on social signals (saves, check-ins) vs. temporal age.
-- **Geospatial Intelligence:** Leverages **PostGIS** for high-performance coordinate indexing and radius-based discovery queries.
-- **Real-Time Data Pipeline:** Architected to handle high-concurrency updates using a lightweight Go backend and connection pooling.
-- **Containerized Infrastructure:** Fully orchestrated via **Docker** to ensure environment parity across development and production.
+- **Momentum Scoring:** Real-time ranking using a time-decay algorithm. Spots gain "hype" from check-ins and saves, which naturally cools off over time.
+- **Geospatial Discovery:** Advanced PostGIS queries to find spots within a specific radius (default 10km) or city-wide trending spots (50km).
+- **Soft Deletes:** Professional data management using `deleted_at` timestamps, allowing for instant data recovery and audit trails.
+- **Security & Safety:**
+  - API Key authentication (`X-API-KEY`) for all write operations.
+  - Category validation to ensure data integrity.
+  - Rate limiting to prevent spamming check-ins or saves.
+- **GeoJSON Support:** Native GeoJSON output for seamless integration with Mapbox, Leaflet, or Google Maps.
 
 ## Tech Stack
 
-- **Language:** Go (Golang)
-- **Database:** PostgreSQL with PostGIS extension
-- **Infrastructure:** Docker & Docker Compose
-- **Geospatial Logic:** Spherical coordinate geometry ($O(\log N)$ search)
+- **Backend:** Go (Golang)
+- **Database:** PostgreSQL + PostGIS (Dockerized)
+- **Framework:** Gin Gonic
+- **Documentation:** Swagger (swag)
 
-## System Architecture
+## API Reference
 
-The system follows a **Clean Architecture** pattern, separating the core momentum logic from the infrastructure and delivery layers.
+### Discovery (Public)
 
-## 🚦 Getting Started
+- `GET /radar`: Get nearby plans sorted by momentum.
+- `GET /radar/trending`: Get the top 3 trending spots in the region.
+- `GET /radar/geojson`: Get data in GeoJSON format for map rendering.
 
-### Prerequisites
+### Actions (Requires X-API-KEY)
 
-- Go 1.21+
-- Docker & Docker Compose
+- `POST /plans`: Create a new spot.
+- `POST /plans/:id/checkin`: Register a visit.
+- `POST /plans/:id/save`: Mark interest.
+- `DELETE /plans/:id`: Hide a spot from the radar.
+- `POST /plans/:id/restore`: Bring a hidden spot back.
 
-### Installation
+## 🛠 Setup
 
-git clone [https://github.com/yourusername/radar.git](https://github.com/yourusername/radar.git) 2. Start the infrastructure:
-docker-compose up -d 3. Run the engine:
-go run main.go
+1. **Environment:** Create a `.env` file with `DB_URL`, `PORT`, and `INTERNAL_API_KEY`.
+2. **Database:**
+   docker-compose up -d
+3. **Run Server:**
+   make dev
