@@ -242,3 +242,13 @@ func (s *Store) GetTrendingHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, trending)
 }
+
+func (s *Store) RestorePlanHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	if err := s.RestorePlan(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to restore"})
+		return
+	}
+	c.Status(http.StatusOK)
+}

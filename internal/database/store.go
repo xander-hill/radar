@@ -106,3 +106,9 @@ func (s *Store) SoftDeletePlan(ctx context.Context, id int) error {
 	_, err := s.Conn.Exec(ctx, query, id)
 	return err
 }
+
+func (s *Store) RestorePlan(ctx context.Context, id int) error {
+	query := `UPDATE plans SET deleted_at = NULL WHERE id = $1`
+	_, err := s.Conn.Exec(ctx, query, id)
+	return err
+}

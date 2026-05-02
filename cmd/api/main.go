@@ -70,12 +70,14 @@ func main() {
 
 	// 5. Interaction Routes (Protected - Rate Limited)
 	pulse := r.Group("/plans")
+	pulse.Use(api.APIKeyAuth())
 	pulse.Use(api.RateLimiter())
 	{
 		pulse.POST("", store.CreatePlanHandler)
 		pulse.POST("/:id/checkin", store.PostCheckInHandler)
 		pulse.POST("/:id/save", store.PostSaveHandler)
 		pulse.DELETE("/:id", store.DeletePlanHandler)
+		pulse.POST("/:id/restore", store.RestorePlanHandler)
 	}
 
 	// 6. Start the Engine
