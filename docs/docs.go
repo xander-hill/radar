@@ -48,6 +48,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/plans/{id}": {
+            "delete": {
+                "description": "Marks a plan as deleted by setting a timestamp without removing the record from the DB",
+                "tags": [
+                    "plans"
+                ],
+                "summary": "Soft delete a plan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Plan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/plans/{id}/checkin": {
             "post": {
                 "description": "Increments the check-in count for a specific plan",
@@ -67,6 +99,44 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/plans/{id}/restore": {
+            "post": {
+                "description": "Removes the deleted timestamp to make a plan visible on the radar again",
+                "tags": [
+                    "plans"
+                ],
+                "summary": "Restore a soft-deleted plan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Plan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -164,6 +234,47 @@ const docTemplate = `{
                 "summary": "Get nearby plans as GeoJSON",
                 "responses": {}
             }
+        },
+        "/radar/trending": {
+            "get": {
+                "description": "Fetches the top 3 highest momentum plans within a 50km radius",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "Get top trending plans",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "format": "float64",
+                        "description": "Latitude",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "format": "float64",
+                        "description": "Longitude",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_xanderhill_radar_internal_models.Plan"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -182,6 +293,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {

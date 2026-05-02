@@ -198,6 +198,14 @@ func (s *Store) GetRadarGeoJSONHandler(c *gin.Context) {
 	})
 }
 
+// DeletPlanHandler godoc
+// @Summary Soft delete a plan
+// @Description Marks a plan as deleted by setting a timestamp without removing the record from the DB
+// @Tags plans
+// @Param id path int true "Plan ID"
+// @Success 204 "No Content"
+// @Failure 500 {object} map[string]string
+// @Router /plans/{id} [delete]
 func (s *Store) DeletePlanHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -208,6 +216,15 @@ func (s *Store) DeletePlanHandler(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// GetTrendingHandler godoc
+// @Summary Get top trending plans
+// @Description Fetches the top 3 highest momentum plans within a 50km radius
+// @Tags plans
+// @Produce json
+// @Param lat query float64 true "Latitude"
+// @Param lng query float64 true "Longitude"
+// @Success 200 {array} models.Plan
+// @Router /radar/trending [get]
 func (s *Store) GetTrendingHandler(c *gin.Context) {
 	lat, _ := strconv.ParseFloat(c.Query("lat"), 64)
 	lng, _ := strconv.ParseFloat(c.Query("lng"), 64)
@@ -243,6 +260,14 @@ func (s *Store) GetTrendingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, trending)
 }
 
+// RestorePlanHandler godoc
+// @Summary Restore a soft-deleted plan
+// @Description Removes the deleted timestamp to make a plan visible on the radar again
+// @Tags plans
+// @Param id path int true "Plan ID"
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /plans/{id}/restore [post]
 func (s *Store) RestorePlanHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
