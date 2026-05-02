@@ -47,7 +47,20 @@ func main() {
 	store := database.NewStore(conn)
 
 	// 2. Setup Web Router
-	r := gin.New() // Use New() instead of Default() for total control
+	r := gin.New()
+
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // Allow any frontend to talk to us
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-API-KEY")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
 	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		// This custom format shows the Method, Path, Status, and Query Params
 		return fmt.Sprintf("[RADAR] %s | %d | %s | %s | %s\n",
