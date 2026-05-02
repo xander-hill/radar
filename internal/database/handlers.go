@@ -17,19 +17,21 @@ import (
 // @Produce json
 // @Param lat query float64 true "Latitude"
 // @Param lng query float64 true "Longitude"
+// @Param category query string false "Filter by category (e.g. coffee, art)"
 // @Success 200 {array} models.Plan
 // @Router /radar [get]
 func (s *Store) GetRadarHandler(c *gin.Context) {
 	// 1. Get query params (e.g., /radar?lat=34.05&lng=-118.24)
 	lat, _ := strconv.ParseFloat(c.Query("lat"), 64)
 	lng, _ := strconv.ParseFloat(c.Query("lng"), 64)
+	category := c.Query("category")
 	radius := 10000.0 // 10km default
 
 	var plans []models.Plan
 	var err error
 
 	// 2. Fetch from DB
-	plans, err = s.GetNearbyPlans(c.Request.Context(), lat, lng, radius)
+	plans, err = s.GetNearbyPlans(c.Request.Context(), lat, lng, radius, category)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

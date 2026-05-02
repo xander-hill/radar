@@ -5,6 +5,7 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE TABLE IF NOT EXISTS plans (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
+    category TEXT DEFAULT 'general',
     description TEXT,
     location GEOGRAPHY(Point, 4326),
     base_score FLOAT DEFAULT 0,

@@ -16,13 +16,21 @@ func NewStore(conn *pgx.Conn) *Store {
 }
 
 // GetNearbyPlans fetches plans within a radius (in meters)
-func (s *Store) GetNearbyPlans(ctx context.Context, userLat, userLng float64, radius float64) ([]models.Plan, error) {
+func (s *Store) GetNearbyPlans(ctx context.Context, lat, lng float64, radius float64, category string) ([]models.Plan, error) {
 	query := `
-		SELECT id, title, ST_Y(location::geometry), ST_X(location::geometry), base_score, saves, check_ins, created_at
+		SELECT id, title, category, ST_Y(location::geometry) as lat, ST_X(location::geometry) as lng, 
+		       base_score, check_ins, saves, created_at, updated_at
 		FROM plans
-		WHERE ST_DWithin(location, ST_SetSRID(ST_MakePoint($1, $2), 4326), $3)
+		WHERE ST_DWithin(location, ST_MakePoint($1, $2)::geography, $3)
 	`
-	rows, err := s.Conn.Query(ctx, query, userLng, userLat, radius)
+
+	args := []interface{}{lng, lat, radius}
+
+	if category != "" {
+		query += " AND category = $4"
+		args = append(args, category)
+	}
+	rows, err := s.Conn.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}

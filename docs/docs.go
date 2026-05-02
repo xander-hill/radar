@@ -99,6 +99,12 @@ const docTemplate = `{
                         "name": "lng",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by category (e.g. coffee, art)",
+                        "name": "category",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -122,6 +128,9 @@ const docTemplate = `{
                 "base_score": {
                     "description": "Analytics signals for the Momentum Engine",
                     "type": "number"
+                },
+                "category": {
+                    "type": "string"
                 },
                 "check_ins": {
                     "description": "Real-time presence",

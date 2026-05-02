@@ -6,6 +6,7 @@ import "time"
 type Plan struct {
 	ID          int     `json:"id"`
 	Title       string  `json:"title"`
+	Category    string  `json:"category"`
 	Description string  `json:"description"`
 	Lat         float64 `json:"lat"`
 	Lng         float64 `json:"lng"`

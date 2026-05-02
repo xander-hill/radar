@@ -5,6 +5,8 @@ definitions:
       base_score:
         description: Analytics signals for the Momentum Engine
         type: number
+      category:
+        type: string
       check_ins:
         description: Real-time presence
         type: integer
@@ -92,6 +94,10 @@ paths:
         name: lng
         required: true
         type: number
+      - description: Filter by category (e.g. coffee, art)
+        in: query
+        name: category
+        type: string
       produces:
       - application/json
       responses:
