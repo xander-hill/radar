@@ -25,7 +25,7 @@ func (s *Store) GetNearbyPlans(ctx context.Context, lat, lng float64, radius flo
                ST_Distance(location, ST_MakePoint($1, $2)::geography) as distance
         FROM plans
         WHERE ST_DWithin(location, ST_MakePoint($1, $2)::geography, $3)
-        ORDER BY distance ASC
+  			AND deleted_at IS NULL
     `
 
 	args := []interface{}{lng, lat, radius}
@@ -33,6 +33,8 @@ func (s *Store) GetNearbyPlans(ctx context.Context, lat, lng float64, radius flo
 		query += " AND category = $4"
 		args = append(args, category)
 	}
+
+	query += " ORDER BY distance ASC"
 
 	rows, err := s.Conn.Query(ctx, query, args...)
 	if err != nil {
@@ -97,4 +99,10 @@ func (s *Store) CreatePlan(ctx context.Context, p models.Plan) (int, error) {
 	).Scan(&id)
 
 	return id, err
+}
+
+func (s *Store) SoftDeletePlan(ctx context.Context, id int) error {
+	query := `UPDATE plans SET deleted_at = NOW() WHERE id = $1`
+	_, err := s.Conn.Exec(ctx, query, id)
+	return err
 }

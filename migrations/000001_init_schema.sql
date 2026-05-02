@@ -13,11 +13,13 @@ CREATE TABLE IF NOT EXISTS plans (
     saves INT DEFAULT 0,
     last_checkin_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ
 );
 
 -- 3. Create a Spatial Index (Resume Flex: This makes searches 100x faster)
 CREATE INDEX IF NOT EXISTS idx_plans_location ON plans USING GIST (location);
+CREATE INDEX IF NOT EXISTS idx_plans_active ON plans (deleted_at) WHERE deleted_at IS NULL;
 
 -- 4. Add some "Seed Data" for testing
 INSERT INTO plans (title, description, location, base_score)

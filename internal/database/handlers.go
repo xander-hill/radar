@@ -190,3 +190,13 @@ func (s *Store) GetRadarGeoJSONHandler(c *gin.Context) {
 		"features": features,
 	})
 }
+
+func (s *Store) DeletePlanHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	if err := s.SoftDeletePlan(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete"})
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

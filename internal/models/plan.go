@@ -25,4 +25,6 @@ type Plan struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 
 	Distance float64 `json:"distance_meters"`
+
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
 }
