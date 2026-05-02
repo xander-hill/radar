@@ -200,3 +200,38 @@ func (s *Store) DeletePlanHandler(c *gin.Context) {
 	}
 	c.Status(http.StatusNoContent)
 }
+
+func (s *Store) GetTrendingHandler(c *gin.Context) {
+	lat, _ := strconv.ParseFloat(c.Query("lat"), 64)
+	lng, _ := strconv.ParseFloat(c.Query("lng"), 64)
+
+	// Search a much wider area for "Trending" (50km)
+	plans, err := s.GetNearbyPlans(c.Request.Context(), lat, lng, 50000.0, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var trending []models.Plan
+	for i := range plans {
+		plans[i].MomentumScore = logic.CalculateScore(plans[i])
+		plans[i].Status = logic.GetStatus(plans[i].MomentumScore)
+
+		// Only include "Trending" items
+		if plans[i].Status == "trending" {
+			trending = append(trending, plans[i])
+		}
+	}
+
+	// Sort by Momentum Score descending
+	sort.Slice(trending, func(i, j int) bool {
+		return trending[i].MomentumScore > trending[j].MomentumScore
+	})
+
+	// Return top 3
+	if len(trending) > 3 {
+		trending = trending[:3]
+	}
+
+	c.JSON(http.StatusOK, trending)
+}

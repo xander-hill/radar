@@ -66,6 +66,7 @@ func main() {
 	// 4. Read-Only Discovery (Public - No rate limit)
 	r.GET("/radar", store.GetRadarHandler)
 	r.GET("/radar/geojson", store.GetRadarGeoJSONHandler)
+	r.GET("/radar/trending", store.GetTrendingHandler)
 
 	// 5. Interaction Routes (Protected - Rate Limited)
 	pulse := r.Group("/plans")
