@@ -112,6 +112,8 @@ func (s *Store) CreatePlanHandler(c *gin.Context) {
 		return
 	}
 
+	p.BaseScore = 1.0
+
 	// 1. Coordinate Validation
 	if p.Lat < -90 || p.Lat > 90 || p.Lng < -180 || p.Lng > 180 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Coordinates out of bounds"})
