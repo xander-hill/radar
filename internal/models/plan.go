@@ -23,4 +23,6 @@ type Plan struct {
 	LastCheckinAt time.Time `json:"last_checkin_at"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
+
+	Distance float64 `json:"distance_meters"`
 }

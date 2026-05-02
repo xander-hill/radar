@@ -45,7 +45,9 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 
 	// 3. Sort by Momentum
 	sort.Slice(plans, func(i, j int) bool {
-		return logic.CalculateScore(plans[i]) > logic.CalculateScore(plans[j])
+		// Logic: If two things are both "hot", show the closer one.
+		// Or simply prioritize Momentum Score:
+		return plans[i].MomentumScore > plans[j].MomentumScore
 	})
 
 	// 4. Return as JSON

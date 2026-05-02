@@ -21,9 +21,11 @@ func (s *Store) GetNearbyPlans(ctx context.Context, lat, lng float64, radius flo
         SELECT id, title, category, description, 
                ST_Y(location::geometry) as lat, ST_X(location::geometry) as lng, 
                base_score, check_ins, saves, 
-               last_checkin_at, created_at, updated_at
+               last_checkin_at, created_at, updated_at,
+               ST_Distance(location, ST_MakePoint($1, $2)::geography) as distance
         FROM plans
         WHERE ST_DWithin(location, ST_MakePoint($1, $2)::geography, $3)
+        ORDER BY distance ASC
     `
 
 	args := []interface{}{lng, lat, radius}
@@ -47,6 +49,7 @@ func (s *Store) GetNearbyPlans(ctx context.Context, lat, lng float64, radius flo
 			&p.Lat, &p.Lng,
 			&p.BaseScore, &p.CheckIns, &p.Saves,
 			&p.LastCheckinAt, &p.CreatedAt, &p.UpdatedAt,
+			&p.Distance,
 		)
 		if err != nil {
 			return nil, err
@@ -74,7 +77,7 @@ func (s *Store) IncrementSave(ctx context.Context, planID int) error {
 	query := `
 		UPDATE plans 
 		SET saves = saves + 1, 
-		    updated_at = CURRENT_TIMESTAMP 
+		    updated_at = NOW()
 		WHERE id = $1
 	`
 	_, err := s.Conn.Exec(ctx, query, planID)
