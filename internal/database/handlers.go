@@ -40,13 +40,14 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 	// Calculate scores for each plan before returning
 	for i := range plans {
 		plans[i].MomentumScore = logic.CalculateScore(plans[i])
-		plans[i].Status = logic.GetState(plans[i].MomentumScore)
+		plans[i].Status = logic.GetStatus(plans[i].MomentumScore) // Dynamic assignment
 	}
 
 	// 3. Sort by Momentum
 	sort.Slice(plans, func(i, j int) bool {
-		// Logic: If two things are both "hot", show the closer one.
-		// Or simply prioritize Momentum Score:
+		if plans[i].MomentumScore == plans[j].MomentumScore {
+			return plans[i].Distance < plans[j].Distance
+		}
 		return plans[i].MomentumScore > plans[j].MomentumScore
 	})
 
@@ -107,8 +108,25 @@ func (s *Store) PostSaveHandler(c *gin.Context) {
 func (s *Store) CreatePlanHandler(c *gin.Context) {
 	var p models.Plan
 	if err := c.ShouldBindJSON(&p); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
 		return
+	}
+
+	// 1. Coordinate Validation
+	if p.Lat < -90 || p.Lat > 90 || p.Lng < -180 || p.Lng > 180 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Coordinates out of bounds"})
+		return
+	}
+
+	// 2. Sanitize Inputs (Avoid XSS or weird strings)
+	if len(p.Title) < 3 || len(p.Title) > 100 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Title must be between 3 and 100 chars"})
+		return
+	}
+
+	// 3. Security: Cap the BaseScore
+	if p.BaseScore > 50 {
+		p.BaseScore = 50 // Hard cap for public users
 	}
 
 	id, err := s.CreatePlan(c.Request.Context(), p)
@@ -119,4 +137,54 @@ func (s *Store) CreatePlanHandler(c *gin.Context) {
 
 	p.ID = id
 	c.JSON(http.StatusCreated, p)
+}
+
+// GetRadarGeoJSONHandler returns nearby plans in GeoJSON format
+// @Summary Get nearby plans as GeoJSON
+// @Tags plans
+// @Produce json
+// @Router /radar/geojson [get]
+func (s *Store) GetRadarGeoJSONHandler(c *gin.Context) {
+	lat, _ := strconv.ParseFloat(c.Query("lat"), 64)
+	lng, _ := strconv.ParseFloat(c.Query("lng"), 64)
+	radius := 10000.0
+
+	plans, err := s.GetNearbyPlans(c.Request.Context(), lat, lng, radius, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Mapbox/Leaflet compatible structure
+	features := make([]map[string]interface{}, len(plans))
+	for i, p := range plans {
+		// Recalculate momentum for the properties
+		momentum := logic.CalculateScore(p)
+		weight := momentum / 20.0
+		if weight > 1.0 {
+			weight = 1.0
+		}
+
+		features[i] = map[string]interface{}{
+			"type": "Feature",
+			"geometry": map[string]interface{}{
+				"type":        "Point",
+				"coordinates": []float64{p.Lng, p.Lat}, // GeoJSON is [Lng, Lat]
+			},
+			"properties": map[string]interface{}{
+				"id":       p.ID,
+				"title":    p.Title,
+				"momentum": momentum,
+				"category": p.Category,
+				"weight":   weight,
+				"status":   logic.GetStatus(momentum),
+				"distance": p.Distance,
+			},
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"type":     "FeatureCollection",
+		"features": features,
+	})
 }

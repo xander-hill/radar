@@ -27,13 +27,15 @@ func CalculateScore(p models.Plan) float64 {
 }
 
 // GetState translates a numerical score into a human-readable "vibe"
-func GetState(score float64) string {
-	if score > 10 {
-		return "HOT 🔥"
-	} else if score > 5 {
-		return "BUILDING 📈"
-	} else if score > 2 {
-		return "EARLY 🌱"
+func GetStatus(score float64) string {
+	if score > 15.0 {
+		return "trending"
 	}
-	return "COLD ❄️"
+	if score > 5.0 {
+		return "steady"
+	}
+	if score > 0.5 {
+		return "quiet"
+	}
+	return "cold"
 }

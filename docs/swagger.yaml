@@ -135,4 +135,12 @@ paths:
       summary: Get nearby trending plans
       tags:
       - plans
+  /radar/geojson:
+    get:
+      produces:
+      - application/json
+      responses: {}
+      summary: Get nearby plans as GeoJSON
+      tags:
+      - plans
 swagger: "2.0"

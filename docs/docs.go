@@ -152,6 +152,18 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/radar/geojson": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "Get nearby plans as GeoJSON",
+                "responses": {}
+            }
         }
     },
     "definitions": {
