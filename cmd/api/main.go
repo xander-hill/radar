@@ -37,6 +37,7 @@ func main() {
 	r.POST("/plans/:id/checkin", store.PostCheckInHandler)
 	r.POST("/plans/:id/save", store.PostSaveHandler)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.POST("/plans", store.CreatePlanHandler)
 
 	// 4. Start the Engine
 	log.Println("Radar API is live on http://localhost:8080")

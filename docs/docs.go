@@ -15,6 +15,39 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/plans": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "Create a new plan",
+                "parameters": [
+                    {
+                        "description": "Plan data",
+                        "name": "plan",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_xanderhill_radar_internal_models.Plan"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_xanderhill_radar_internal_models.Plan"
+                        }
+                    }
+                }
+            }
+        },
         "/plans/{id}/checkin": {
             "post": {
                 "description": "Increments the check-in count for a specific plan",
@@ -109,7 +142,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Includes distance_meters and momentum_score",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -142,8 +175,14 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "distance_meters": {
+                    "type": "number"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "last_checkin_at": {
+                    "type": "string"
                 },
                 "lat": {
                     "type": "number"

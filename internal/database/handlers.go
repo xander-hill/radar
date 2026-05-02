@@ -18,7 +18,7 @@ import (
 // @Param lat query float64 true "Latitude"
 // @Param lng query float64 true "Longitude"
 // @Param category query string false "Filter by category (e.g. coffee, art)"
-// @Success 200 {array} models.Plan
+// @Success 200 {array} models.Plan "Includes distance_meters and momentum_score"
 // @Router /radar [get]
 func (s *Store) GetRadarHandler(c *gin.Context) {
 	// 1. Get query params (e.g., /radar?lat=34.05&lng=-118.24)
@@ -93,4 +93,30 @@ func (s *Store) PostSaveHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Plan saved! Interest signal tracked."})
+}
+
+// CreatePlanHandler adds a new activity to the radar
+// @Summary Create a new plan
+// @ Description Adds a new location to the databse with geospatial coordinates
+// @Tags plans
+// @Accept json
+// @Produce json
+// @Param plan body models.Plan true "Plan data"
+// @Success 201 {object} models.Plan
+// @Router /plans [post]
+func (s *Store) CreatePlanHandler(c *gin.Context) {
+	var p models.Plan
+	if err := c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := s.CreatePlan(c.Request.Context(), p)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create plan"})
+		return
+	}
+
+	p.ID = id
+	c.JSON(http.StatusCreated, p)
 }

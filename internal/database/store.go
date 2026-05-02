@@ -83,3 +83,18 @@ func (s *Store) IncrementSave(ctx context.Context, planID int) error {
 	_, err := s.Conn.Exec(ctx, query, planID)
 	return err
 }
+
+// Create new plan
+func (s *Store) CreatePlan(ctx context.Context, p models.Plan) (int, error) {
+	query := `
+        INSERT INTO plans (title, category, description, location, base_score)
+        VALUES ($1, $2, $3, ST_MakePoint($4, $5)::geography, $6)
+        RETURNING id
+    `
+	var id int
+	err := s.Conn.QueryRow(ctx, query,
+		p.Title, p.Category, p.Description, p.Lng, p.Lat, p.BaseScore,
+	).Scan(&id)
+
+	return id, err
+}
