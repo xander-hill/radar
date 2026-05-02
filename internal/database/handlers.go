@@ -114,6 +114,13 @@ func (s *Store) CreatePlanHandler(c *gin.Context) {
 
 	p.BaseScore = 1.0
 
+	if p.Category != "" && !models.IsValidCategory(p.Category) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid category. Allowed: coffee, nightlife, art, food",
+		})
+		return
+	}
+
 	// 1. Coordinate Validation
 	if p.Lat < -90 || p.Lat > 90 || p.Lng < -180 || p.Lng > 180 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Coordinates out of bounds"})
