@@ -20,6 +20,7 @@ type Plan struct {
 	MomentumScore float64 `json:"momentum_score"`
 	Status        string  `json:"status"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	LastCheckinAt time.Time `json:"last_checkin_at"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
