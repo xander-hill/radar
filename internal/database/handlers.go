@@ -27,7 +27,7 @@ func (s *Store) GetRadarHandler(c *gin.Context) {
 	category := c.Query("category")
 	radius := 10000.0 // 10km default
 
-	var plans []models.Plan
+	plans := []models.Plan{}
 	var err error
 
 	// 2. Fetch from DB

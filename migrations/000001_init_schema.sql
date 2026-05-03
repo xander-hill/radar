@@ -24,6 +24,6 @@ CREATE INDEX IF NOT EXISTS idx_plans_active ON plans (deleted_at) WHERE deleted_
 -- 4. Add some "Seed Data" for testing
 INSERT INTO plans (title, description, location, base_score)
 VALUES 
-('Arts District Pop-up', 'Secret gallery opening', ST_SetSRID(ST_MakePoint(-118.2352, 34.0415), 4326), 50.0),
-('Erewhon Pulse', 'High activity at the juice bar', ST_SetSRID(ST_MakePoint(-118.3617, 34.0768), 4326), 20.0),
-('Santa Monica Sunset Yoga', 'Beachfront session', ST_SetSRID(ST_MakePoint(-118.4912, 34.0115), 4326), 35.0);
+('Coffman Union Pulse', 'Heavy student activity', ST_SetSRID(ST_MakePoint(-93.2354, 44.9744), 4326), 50.0),
+('Dinkytown Coffee', 'Finals week energy', ST_SetSRID(ST_MakePoint(-93.2363, 44.9808), 4326), 25.0),
+('Huntington Bank Stadium', 'Game day momentum', ST_SetSRID(ST_MakePoint(-93.2246, 44.9760), 4326), 40.0);
