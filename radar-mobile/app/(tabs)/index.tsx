@@ -7,6 +7,7 @@ import { useRadar } from '../../hooks/useRadar';
 
 export default function RadarScreen() {
   const { plans, refreshRadar } = useRadar();
+  const [selectedPlan, setSelectedPlan] = React.useState<any>(null);
   console.log("📍 Current Plans in State:", JSON.stringify(plans, null, 2));
 
   useEffect(() => {
@@ -24,13 +25,13 @@ export default function RadarScreen() {
       <MapView 
         style={styles.map}
         showsUserLocation={true}
-        zoomEnabled={true}            // <--- Make sure these are true
-        scrollEnabled={true}          // <--- Make sure these are true
+        zoomEnabled={true}           
+        scrollEnabled={true}         
         rotateEnabled={true}
         initialRegion={{
           latitude: 44.974,
           longitude: -93.235,
-          latitudeDelta: 0.02, // Smaller number = tighter zoom
+          latitudeDelta: 0.02, 
           longitudeDelta: 0.02,
         }}
       >
@@ -41,19 +42,27 @@ export default function RadarScreen() {
               latitude: Number(plan.lat), 
               longitude: Number(plan.lng) 
             }}
-            pinColor={plan.status === 'trending' ? 'orange' : 'red'}
-            onPress={() => console.log("Marker Pressed ID:", plan.id)}
+            onPress={() => setSelectedPlan(plan)} // <--- Set the plan here
           >
-            {/* Remove title/description props from Marker and use this Callout */}
-            <Callout tooltip={false}>
-              <View style={{ width: 200, minHeight: 60, padding: 10, backgroundColor: 'white' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{plan.title}</Text>
-                <Text style={{ color: '#666' }}>{plan.description}</Text>
-              </View>
-            </Callout>
           </Marker>
         ))}
       </MapView>
+      {selectedPlan && (
+        <View style={styles.bottomSheet}>
+          <View style={styles.sheetHeader}>
+            <Text style={styles.sheetTitle}>{selectedPlan.title}</Text>
+            <TouchableOpacity onPress={() => setSelectedPlan(null)}>
+              <Text style={{ color: '#999', fontSize: 18 }}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <Text style={styles.sheetDescription}>{selectedPlan.description}</Text>
+          
+          <TouchableOpacity style={styles.checkInButton}>
+            <Text style={styles.buttonText}>Check In Here</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -61,4 +70,34 @@ export default function RadarScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { width: '100%', height: '100%' },
+  bottomSheet: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  sheetHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  sheetTitle: { fontSize: 22, fontWeight: 'bold' },
+  sheetDescription: { fontSize: 16, color: '#666', marginBottom: 20 },
+  checkInButton: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  buttonText: { color: 'white', fontWeight: '600', fontSize: 16 },
 });
