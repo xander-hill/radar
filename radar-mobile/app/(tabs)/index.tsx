@@ -5,6 +5,14 @@ import MapView, { Marker, Callout } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRadar } from '../../hooks/useRadar';
 
+const CATEGORY_COLORS: any = {
+  coffee: '#6F4E37',    // Brown
+  food: '#FF5733',      // Orange-Red
+  nightlife: '#8E44AD', // Purple
+  art: '#2ECC71',       // Green
+  general: '#3498DB',   // Blue
+};
+
 export default function RadarScreen() {
   const { plans, refreshRadar } = useRadar();
   const [selectedPlan, setSelectedPlan] = React.useState<any>(null);
@@ -42,15 +50,22 @@ export default function RadarScreen() {
               latitude: Number(plan.lat), 
               longitude: Number(plan.lng) 
             }}
-            onPress={() => setSelectedPlan(plan)} // <--- Set the plan here
-          >
-          </Marker>
+            pinColor={
+              plan.status === 'trending' ? '#FFD700' : 
+              plan.status === 'steady'   ? '#FFA500' :
+              (CATEGORY_COLORS[plan.category] || 'red')
+            }
+            onPress={() => setSelectedPlan(plan)}
+          />
         ))}
       </MapView>
       {selectedPlan && (
         <View style={styles.bottomSheet}>
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>{selectedPlan.title}</Text>
+            <View>
+              <Text style={styles.categoryBadge}>{selectedPlan.category?.toUpperCase()}</Text>
+              <Text style={styles.sheetTitle}>{selectedPlan.title}</Text>
+            </View>
             <TouchableOpacity onPress={() => setSelectedPlan(null)}>
               <Text style={{ color: '#999', fontSize: 18 }}>✕</Text>
             </TouchableOpacity>
@@ -100,4 +115,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: { color: 'white', fontWeight: '600', fontSize: 16 },
+  categoryBadge: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
 });
